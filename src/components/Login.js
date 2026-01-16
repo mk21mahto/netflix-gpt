@@ -9,7 +9,7 @@ import {
 import { auth } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
-import { PHOTOURL } from "../utils/constants";
+import { BG_URL, PHOTOURL } from "../utils/constants";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -83,7 +83,7 @@ const Login = () => {
       <div className="w-full h-screen">
         <img
           className="w-full h-screen object-cover"
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/ce462eb6-4d7f-4c9a-9f61-93cb535a64fd/web/CH-en-20260105-TRIFECTA-perspective_4f97585e-9966-42e9-8929-a4880e478943_small.jpg"
+          src={BG_URL}
           alt="Netflix Login Background"
         />
       </div>
