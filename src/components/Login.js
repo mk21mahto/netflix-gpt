@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState, useRef } from "react";
 import Header from "./Header";
 import { checkValidData } from "../utils/validate";
 import {
@@ -13,24 +13,20 @@ import { BG_URL, PHOTOURL } from "../utils/constants";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
   const dispatch = useDispatch();
 
   const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
 
-  const toggleSignInForm = () => {
-    setIsSignInForm(!isSignInForm);
-  };
-
   const handleButtonClick = () => {
     const message = checkValidData(email.current.value, password.current.value);
     setErrorMessage(message);
-
     if (message) return;
 
     if (!isSignInForm) {
+      // Sign Up Logic
       createUserWithEmailAndPassword(
         auth,
         email.current.value,
@@ -54,7 +50,7 @@ const Login = () => {
               );
             })
             .catch((error) => {
-              setErrorMessage(error);
+              setErrorMessage(error.message);
             });
         })
         .catch((error) => {
@@ -63,12 +59,16 @@ const Login = () => {
           setErrorMessage(errorCode + "-" + errorMessage);
         });
     } else {
+      // Sign In Logic
       signInWithEmailAndPassword(
         auth,
         email.current.value,
         password.current.value
       )
-        .then((userCredential) => {})
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+        })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
@@ -77,62 +77,57 @@ const Login = () => {
     }
   };
 
+  const toggleSignInForm = () => {
+    setIsSignInForm(!isSignInForm);
+  };
   return (
     <div>
       <Header />
-      <div className="w-full h-screen">
-        <img
-          className="w-full h-screen object-cover"
-          src={BG_URL}
-          alt="Netflix Login Background"
-        />
+      <div className="absolute">
+        <img className="h-screen object-cover" src={BG_URL} alt="logo" />
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-75 p-8 rounded text-white w-4/12"
+        className="w-full md:w-3/12 absolute p-12 bg-black my-36 mx-auto right-0 left-0 text-white rounded-lg bg-opacity-80"
       >
         <h1 className="font-bold text-3xl py-4">
           {isSignInForm ? "Sign In" : "Sign Up"}
         </h1>
+
         {!isSignInForm && (
           <input
             ref={name}
-            type="name"
+            type="text"
             placeholder="Full Name"
-            className="p-4 my-4 border border-gray-700 rounded w-full bg-gray-700"
+            className="p-4 my-4 w-full bg-gray-700"
           />
         )}
         <input
           ref={email}
-          type="email"
+          type="text"
           placeholder="Email Address"
-          className="p-4 my-4 border border-gray-700 rounded w-full bg-gray-700"
+          className="p-4 my-4 w-full bg-gray-700"
         />
         <input
           ref={password}
           type="password"
           placeholder="Password"
-          className="p-4 my-4 border border-gray-700 rounded w-full bg-gray-700"
+          className="p-4 my-4 w-full bg-gray-700"
         />
-        {errorMessage && (
-          <p className="text-red-500 font-bold text-lg py-2">{errorMessage}</p>
-        )}
+        <p className="text-red-500 font-bold text-lg py-2">{errorMessage}</p>
         <button
-          type="submit"
-          className="p-4 my-4 bg-red-600 text-white rounded w-full"
+          className="p-4 my-6 bg-red-700 w-full rounded-lg"
           onClick={handleButtonClick}
         >
           {isSignInForm ? "Sign In" : "Sign Up"}
         </button>
-        <p className="text-gray-400 cursor-pointer" onClick={toggleSignInForm}>
-          {isSignInForm ? "New to Netflix? " : "Already registered? "}
-          <span className="text-white">
-            {isSignInForm ? "Sign Up Now" : "Sign In Now"}
-          </span>
+        <p className="py-4 cursor-pointer" onClick={toggleSignInForm}>
+          {isSignInForm
+            ? "New to Netflix? Sign Up Now"
+            : "Already registered? Sign In Now."}
         </p>
       </form>
     </div>
   );
 };
-
 export default Login;
